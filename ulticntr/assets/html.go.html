@@ -1,0 +1,73 @@
+Content-Type: text/html
+
+<!DOCTYPE html>
+
+<html>
+  <meta charset="UTF-8" />
+
+  <style>
+    html {
+      background-image: url("{{ .Background.URI }}");
+      color: #fff;
+    }
+    .alien {
+      background-image: url("{{ .Alien.URI }}");
+      width: 82px;
+      height: 90px;
+    }
+    .disk {
+      background-image: url("{{ .Disk.URI }}");
+      width: 65px;
+      height: 80px;
+    }
+    .peace {
+      background-image: url("{{ .Peace.URI }}");
+      width: 74px;
+      height: 75px;
+    }
+    .yinyang {
+      background-image: url("{{ .Yinyang.URI }}");
+      width: 65px;
+      height: 65px;
+    }
+    .spidey {
+      background-image: url("{{ .Spidey.URI }}");
+      width: 241px;
+      height: 124px;
+    }
+    table,
+    td {
+      border: 2px solid #fff;
+      text-align: center;
+      padding: 10px;
+    }
+  </style>
+
+  <h1>Welcome.</h1>
+  <div class="spidey"></div>
+  <h2>You've found the ultimate counter.</h2>
+  <table>
+    <tr>
+      <td><div class="alien"></div></td>
+      <td><div class="peace"></div></td>
+      <td><div class="disk"></div></td>
+      <td><div class="alien"></div></td>
+    </tr>
+    <tr>
+      <td><div class="yinyang"></div></td>
+      <td colspan="2"><h3>You are visitor number</h3></td>
+      <td><div class="alien"></div></td>
+    </tr>
+    <tr>
+      <td><div class="alien"></div></td>
+      <td colspan="2">{{ .Counter }}</td>
+      <td><div class="yinyang"></div></td>
+    </tr>
+    <tr>
+      <td><div class="alien"></div></td>
+      <td><div class="disk"></div></td>
+      <td><div class="peace"></div></td>
+      <td><div class="alien"></div></td>
+    </tr>
+  </table>
+</html>
