@@ -78,7 +78,7 @@ func render() {
 			data:  peace,
 			class: "peace",
 		},
-		Counter: 1515151,
+		Counter: getCount(),
 	}
 
 	t, err := template.New("page").Parse(htmlTemplate)
@@ -92,4 +92,5 @@ func render() {
 		return
 	}
 	fmt.Println(b.String())
+	fmt.Println(getTable())
 }

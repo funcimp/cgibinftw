@@ -2,7 +2,7 @@
 
 
 build:
-	go build -o dist/cgi-bin/ulticntr ulticntr/main.go
+	go build -o dist/cgi-bin/ulticntr ulticntr/*.go
 
 run: build
 	go run main.go
