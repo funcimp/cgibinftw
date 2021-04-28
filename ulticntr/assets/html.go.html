@@ -10,31 +10,12 @@ Content-Type: text/html
       background-image: url("{{ .Background.URI }}");
       color: #fff;
     }
-    .alien {
-      background-image: url("{{ .Alien.URI }}");
-      width: 82px;
-      height: 90px;
-    }
-    .disk {
-      background-image: url("{{ .Disk.URI }}");
-      width: 65px;
-      height: 80px;
-    }
-    .peace {
-      background-image: url("{{ .Peace.URI }}");
-      width: 74px;
-      height: 75px;
-    }
-    .yinyang {
-      background-image: url("{{ .Yinyang.URI }}");
-      width: 65px;
-      height: 65px;
-    }
-    .spidey {
-      background-image: url("{{ .Spidey.URI }}");
-      width: 241px;
-      height: 124px;
-    }
+    {{ range $key, $value := .Images }}
+    .{{$key}} {
+      background-image: url("{{ $value.URI }}");
+      width: {{$value.Width}}px;
+      height: {{$value.Height}}px;
+    }{{ end }}
     table,
     td {
       border: 2px solid #fff;

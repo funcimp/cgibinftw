@@ -29,13 +29,15 @@ var (
 )
 
 func main() {
-	render()
+	if err := render(); err != nil {
+		fmt.Println(err)
+	}
 }
 
 type img struct {
-	data  []byte
-	alt   string
-	class string
+	data   []byte
+	Width  uint
+	Height uint
 }
 
 func (i img) URI() template.URL {
@@ -45,6 +47,7 @@ func (i img) URI() template.URL {
 
 type assets struct {
 	Background img
+	Images     map[string]img
 	Alien      img
 	Disk       img
 	Spidey     img
@@ -53,44 +56,35 @@ type assets struct {
 	Counter    uint64
 }
 
-func render() {
-	a := assets{
-		Background: img{
-			data: starBG,
-		},
-		Alien: img{
-			data:  alien,
-			class: "alien",
-		},
-		Disk: img{
-			data:  disk,
-			class: "disk",
-		},
-		Spidey: img{
-			data:  spidey,
-			class: "spidey",
-		},
-		Yinyang: img{
-			data:  yinyang,
-			class: "yinyang",
-		},
-		Peace: img{
-			data:  peace,
-			class: "peace",
-		},
-		Counter: getCount(),
+func newAssets() assets {
+	images := make(map[string]img)
+	images["alien"] = img{data: alien, Width: 82, Height: 90}
+	images["disk"] = img{data: disk, Width: 65, Height: 80}
+	images["peace"] = img{data: peace, Width: 74, Height: 75}
+	images["yinyang"] = img{data: yinyang, Width: 65, Height: 65}
+	images["spidey"] = img{data: spidey, Width: 241, Height: 124}
+
+	return assets{
+		Images:     images,
+		Background: img{data: starBG}}
+}
+
+func render() error {
+	a := newAssets()
+	counter, err := logVisit()
+	if err != nil {
+		return err
 	}
+	a.Counter = counter
 
 	t, err := template.New("page").Parse(htmlTemplate)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 	var b bytes.Buffer
 	if err := t.Execute(&b, a); err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 	fmt.Println(b.String())
-	fmt.Println(getTable())
+	return nil
 }

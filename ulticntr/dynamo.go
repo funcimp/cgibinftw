@@ -2,32 +2,49 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"errors"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func getCount() uint64 {
-	return 1337
+func newClient(ctx context.Context) (*dynamodb.Client, error) {
+	cfg, err := config.LoadDefaultConfig(ctx)
+	return dynamodb.NewFromConfig(cfg), err
 }
 
-func getTable() []string {
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+func updateCounterInput() *dynamodb.UpdateItemInput {
+	tableName := "ulticntr"
+	updateExpression := "SET hit = hit + :incr"
+	key := make(map[string]types.AttributeValue)
+	key["counter_id"] = &types.AttributeValueMemberS{Value: "primary"}
+	expAttVals := make(map[string]types.AttributeValue)
+	expAttVals[":incr"] = &types.AttributeValueMemberN{Value: "1"}
+
+	return &dynamodb.UpdateItemInput{
+		Key:                       key,
+		TableName:                 &tableName,
+		UpdateExpression:          &updateExpression,
+		ExpressionAttributeValues: expAttVals,
+		ReturnValues:              "UPDATED_NEW",
+	}
+}
+
+func logVisit() (v uint64, err error) {
+	ctx := context.Background()
+	client, err := newClient(ctx)
 	if err != nil {
-		fmt.Println(err)
+		return v, err
 	}
-	client := dynamodb.NewFromConfig(cfg)
-
-	tables, err := client.ListTables(context.TODO(), &dynamodb.ListTablesInput{})
+	result, err := client.UpdateItem(ctx, updateCounterInput())
 	if err != nil {
-		fmt.Println(err)
+		return v, err
 	}
-
-	r := ""
-	for _, name := range tables.TableNames {
-		r = r + name
+	output, ok := result.Attributes["hit"].(*types.AttributeValueMemberN)
+	if !ok {
+		return v, errors.New("typecasting failed for hit")
 	}
-
-	return tables.TableNames
+	return strconv.ParseUint(output.Value, 10, 64)
 }
