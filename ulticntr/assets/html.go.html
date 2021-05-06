@@ -10,8 +10,8 @@ Content-Type: text/html
       background-image: url("{{ .Background.URI }}");
       color: #fff;
     }
-    {{ range $key, $value := .Images }}
-    .{{$key}} {
+    {{ range $i, $value := .Images }}
+    .{{$value.Class}} {
       background-image: url("{{ $value.URI }}");
       width: {{$value.Width}}px;
       height: {{$value.Height}}px;
@@ -25,30 +25,30 @@ Content-Type: text/html
   </style>
 
   <h1>Welcome.</h1>
-  <div class="spidey"></div>
+  <div class="{{.GetClassName 0}}"></div>
   <h2>You've found the ultimate counter.</h2>
   <table>
     <tr>
-      <td><div class="alien"></div></td>
-      <td><div class="peace"></div></td>
-      <td><div class="disk"></div></td>
-      <td><div class="alien"></div></td>
+      <td><div class="{{.GetClassName 1}}"></div></td>
+      <td><div class="{{.GetClassName 2}}"></div></td>
+      <td><div class="{{.GetClassName 3}}"></div></td>
+      <td><div class="{{.GetClassName 4}}"></div></td>
     </tr>
     <tr>
-      <td><div class="yinyang"></div></td>
+      <td><div class="{{.GetClassName 5}}"></div></td>
       <td colspan="2"><h3>You are visitor number</h3></td>
-      <td><div class="alien"></div></td>
+      <td><div class="{{.GetClassName 6}}"></div></td>
     </tr>
     <tr>
-      <td><div class="alien"></div></td>
+      <td><div class="{{.GetClassName 7}}"></div></td>
       <td colspan="2">{{ .Counter }}</td>
-      <td><div class="yinyang"></div></td>
+      <td><div class="{{.GetClassName 8}}"></div></td>
     </tr>
     <tr>
-      <td><div class="alien"></div></td>
-      <td><div class="disk"></div></td>
-      <td><div class="peace"></div></td>
-      <td><div class="alien"></div></td>
+      <td><div class="{{.GetClassName 9}}"></div></td>
+      <td><div class="{{.GetClassName 10}}"></div></td>
+      <td><div class="{{.GetClassName 11}}"></div></td>
+      <td><div class="{{.GetClassName 12}}"></div></td>
     </tr>
   </table>
 </html>
