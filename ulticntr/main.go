@@ -8,6 +8,8 @@ import (
 	"html/template"
 	"log"
 	"math/rand"
+	"net/url"
+	"os"
 	"time"
 )
 
@@ -100,18 +102,25 @@ func newAssets(options ...option) assets {
 	return a
 }
 
+func parseOpts(queryString string) (o []option) {
+	values, _ := url.ParseQuery(queryString)
+	if values.Get("random") == "true" {
+		o = append(o, withRandomImages())
+	}
+	if values.Get("bg") == "fireworks" {
+		o = append(o, withFireworks())
+	}
+	return o
+}
+
 func render() error {
-	a := newAssets()
+	t := template.Must(template.New("page").Parse(htmlTemplate))
+	a := newAssets(parseOpts(os.Getenv("QUERY_STRING"))...)
 	counter, err := logVisit()
 	if err != nil {
 		return err
 	}
 	a.Counter = counter
-
-	t, err := template.New("page").Parse(htmlTemplate)
-	if err != nil {
-		return err
-	}
 	var b bytes.Buffer
 	if err := t.Execute(&b, a); err != nil {
 		return err
