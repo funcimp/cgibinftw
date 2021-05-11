@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+  bootstrap:
+    depends_on:
+      - dynamodb-local
+    image: amazon/aws-cli:2.2.3
+    environment: &aws_creds
+      AWS_ACCESS_KEY_ID: "DUMMYIDEXAMPLE"
+      AWS_SECRET_ACCESS_KEY: "DUMMYEXAMPLEKEY"
+      AWS_REGION: "us-east-1"
+      ENDPOINT_URL: "http://dynamodb-local:8000"
+    volumes:
+      - ./scripts:/usr/local/bin
+    entrypoint: "entrypoint.sh"
+  dev:
+    depends_on:
+      - dynamodb-local
+    build: .
+    container_name: cgibinftw
+    ports:
+      - "8888:8888"
+    environment:
+      <<: *aws_creds

@@ -12,7 +12,8 @@ import (
 
 func newClient(ctx context.Context) (*dynamodb.Client, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
-	return dynamodb.NewFromConfig(cfg), err
+	endpoint := dynamodb.EndpointResolverFromURL("http://dynamodb-local:8000")
+	return dynamodb.NewFromConfig(cfg, dynamodb.WithEndpointResolver(endpoint)), err
 }
 
 func updateCounterInput() *dynamodb.UpdateItemInput {
