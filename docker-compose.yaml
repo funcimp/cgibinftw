@@ -9,16 +9,14 @@ services:
   bootstrap:
     depends_on:
       - dynamodb-local
-    image: amazon/aws-cli:2.2.3
+    build: dev/.
+    container_name: bootstrap
     environment: &aws_creds
       AWS_ACCESS_KEY_ID: "DUMMYIDEXAMPLE"
       AWS_SECRET_ACCESS_KEY: "DUMMYEXAMPLEKEY"
       AWS_REGION: "us-east-1"
       ENDPOINT_URL: "http://dynamodb-local:8000"
-    volumes:
-      - ./scripts:/usr/local/bin
-    entrypoint: "entrypoint.sh"
-  dev:
+  cgibinftw:
     depends_on:
       - dynamodb-local
     build: .
@@ -27,3 +25,4 @@ services:
       - "8888:8888"
     environment:
       <<: *aws_creds
+      TEST_MODE:

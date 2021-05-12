@@ -1,9 +1,13 @@
-FROM golang:latest
+FROM golang:1.16.4-alpine3.13
 
 WORKDIR /cgibinftw
-
-COPY . .
-
 EXPOSE 8888
 
-CMD [ "make", "run" ]
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN mkdir -p dist/cgi-bin && \
+    go build -o dist/cgi-bin/ulticntr ulticntr/*.go && \
+    go build
+
+CMD [ "./entrypoint.sh" ]

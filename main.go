@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"net/http/cgi"
 )
@@ -20,6 +21,8 @@ func main() {
 		cgiHandler.ServeHTTP(w, r)
 	}
 	http.HandleFunc("/cgi-bin/", hFunc)
-	http.ListenAndServe("0.0.0.0:8888", nil)
+	if err := http.ListenAndServe("0.0.0.0:8888", nil); err != nil {
+		log.Println("server error:", err)
+	}
 
 }

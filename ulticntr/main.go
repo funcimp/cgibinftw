@@ -34,7 +34,7 @@ var (
 
 func main() {
 	if err := render(); err != nil {
-		log.Println(err)
+		log.Println("oops:", err)
 	}
 }
 
