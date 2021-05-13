@@ -32,6 +32,12 @@ var (
 	peace []byte
 )
 
+// Counter is an interface that has a Count() method that increments the counter
+// and returns the total count and an error
+type Counter interface {
+	Count() (uint64, error)
+}
+
 func main() {
 	if err := render(); err != nil {
 		log.Println("oops:", err)
@@ -114,13 +120,29 @@ func parseOpts(queryString string) (o []option) {
 }
 
 func render() error {
+	var counter Counter
 	t := template.Must(template.New("page").Parse(htmlTemplate))
 	a := newAssets(parseOpts(os.Getenv("QUERY_STRING"))...)
-	counter, err := logVisit()
+
+	if x := os.Getenv("TMP_COUNTER"); x == "true" {
+		cntr, err := newTmpCounter()
+		if err != nil {
+			return err
+		}
+		counter = cntr
+	} else {
+		cntr, err := newDynamoCounter()
+		if err != nil {
+			return err
+		}
+		counter = cntr
+	}
+
+	c, err := counter.Count()
 	if err != nil {
 		return err
 	}
-	a.Counter = counter
+	a.Counter = c
 	var b bytes.Buffer
 	if err := t.Execute(&b, a); err != nil {
 		return err

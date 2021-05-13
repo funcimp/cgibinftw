@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"os"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -10,10 +11,26 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func newClient(ctx context.Context) (*dynamodb.Client, error) {
-	cfg, err := config.LoadDefaultConfig(ctx)
-	endpoint := dynamodb.EndpointResolverFromURL("http://dynamodb-local:8000")
-	return dynamodb.NewFromConfig(cfg, dynamodb.WithEndpointResolver(endpoint)), err
+type dynamoCounter struct {
+	client *dynamodb.Client
+}
+
+func newDynamoCounter() (*dynamoCounter, error) {
+	client, err := newClient()
+	return &dynamoCounter{client: client}, err
+}
+
+func newClient() (*dynamodb.Client, error) {
+	cfg, err := config.LoadDefaultConfig(context.Background())
+	var opts []func(*dynamodb.Options)
+
+	if u := os.Getenv("ENDPOINT_URL"); u != "" {
+		endpoint := dynamodb.EndpointResolverFromURL(u)
+		o := dynamodb.WithEndpointResolver(endpoint)
+		opts = append(opts, o)
+	}
+
+	return dynamodb.NewFromConfig(cfg, opts...), err
 }
 
 func updateCounterInput() *dynamodb.UpdateItemInput {
@@ -33,13 +50,8 @@ func updateCounterInput() *dynamodb.UpdateItemInput {
 	}
 }
 
-func logVisit() (v uint64, err error) {
-	ctx := context.Background()
-	client, err := newClient(ctx)
-	if err != nil {
-		return v, err
-	}
-	result, err := client.UpdateItem(ctx, updateCounterInput())
+func (d dynamoCounter) Count() (v uint64, err error) {
+	result, err := d.client.UpdateItem(context.Background(), updateCounterInput())
 	if err != nil {
 		return v, err
 	}

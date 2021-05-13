@@ -16,6 +16,8 @@ func main() {
 				"AWS_SESSION_TOKEN",
 				"AWS_SECRET_ACCESS_KEY",
 				"AWS_ACCESS_KEY_ID",
+				"TMP_COUNTER",
+				"ENDPOINT_URL",
 			},
 		}
 		cgiHandler.ServeHTTP(w, r)
