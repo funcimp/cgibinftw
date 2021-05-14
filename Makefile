@@ -6,9 +6,10 @@ run: build
 	go run main.go
 
 .PHONY: dev
-dev:
-	ls ./*.go ulticntr/*.go ulticntr/assets/*.go.html | \
-	entr -r make run
+
+
+dev dev-tmp:
+	ls ./*.go ulticntr/*.go ulticntr/assets/*.go.html | entr -r make run
 
 docker-test: test_mode=true
 docker-run: test_mode=false
