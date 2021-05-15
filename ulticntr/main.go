@@ -11,6 +11,8 @@ import (
 	"net/url"
 	"os"
 	"time"
+
+	counter "github.com/funcimp/cgibinftw/ulticntr/counter"
 )
 
 var (
@@ -31,12 +33,6 @@ var (
 	//go:embed assets/images/peace.gif
 	peace []byte
 )
-
-// Counter is an interface that has a Count() method that increments the counter
-// and returns the total count and an error
-type Counter interface {
-	Count() (uint64, error)
-}
 
 func main() {
 	if err := render(); err != nil {
@@ -65,6 +61,7 @@ type assets struct {
 	Images      []img
 	Arrangement []uint
 	Counter     uint64
+	Diag        bool
 }
 
 type option func(*assets)
@@ -73,6 +70,10 @@ func withFireworks() option {
 	return func(a *assets) {
 		a.Background = img{data: fireworksBG}
 	}
+}
+
+func withDiag() option {
+	return func(a *assets) { a.Diag = true }
 }
 
 func withRandomImages() option {
@@ -116,33 +117,26 @@ func parseOpts(queryString string) (o []option) {
 	if values.Get("bg") == "fireworks" {
 		o = append(o, withFireworks())
 	}
+	if values.Get("diag") == "true" {
+		o = append(o, withDiag())
+	}
 	return o
 }
 
 func render() error {
-	var counter Counter
 	t := template.Must(template.New("page").Parse(htmlTemplate))
 	a := newAssets(parseOpts(os.Getenv("QUERY_STRING"))...)
 
-	if x := os.Getenv("TMP_COUNTER"); x == "true" {
-		cntr, err := newTmpCounter()
-		if err != nil {
-			return err
-		}
-		counter = cntr
-	} else {
-		cntr, err := newDynamoCounter()
-		if err != nil {
-			return err
-		}
-		counter = cntr
-	}
-
-	c, err := counter.Count()
+	c, err := counter.New()
 	if err != nil {
 		return err
 	}
-	a.Counter = c
+
+	i, err := c.Count()
+	if err != nil {
+		return err
+	}
+	a.Counter = i
 	var b bytes.Buffer
 	if err := t.Execute(&b, a); err != nil {
 		return err

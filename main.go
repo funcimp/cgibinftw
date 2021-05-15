@@ -16,7 +16,7 @@ func main() {
 				"AWS_SESSION_TOKEN",
 				"AWS_SECRET_ACCESS_KEY",
 				"AWS_ACCESS_KEY_ID",
-				"TMP_COUNTER",
+				"ULTICNTR_BACKEND",
 				"ENDPOINT_URL",
 			},
 		}
@@ -26,5 +26,4 @@ func main() {
 	if err := http.ListenAndServe("0.0.0.0:8888", nil); err != nil {
 		log.Println("server error:", err)
 	}
-
 }
